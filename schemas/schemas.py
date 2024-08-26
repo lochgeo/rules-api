@@ -39,6 +39,7 @@ class RuleBase(BaseModel):
 class RuleCreate(RuleBase):
     conditions: List[ConditionCreate]
     actions: List[ActionCreate]
+    ruleset_id: int
 
 class Rule(RuleBase):
     id: int

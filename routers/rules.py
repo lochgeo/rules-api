@@ -8,16 +8,24 @@ from schemas import schemas
 router = APIRouter()
 
 @router.post("/rules/", response_model=schemas.Rule)
-def create_rule(rule: schemas.RuleCreate, db: Session = Depends(get_db)):
-    db_rule = models.Rule(name=rule.name, description=rule.description, is_active=rule.is_active)
+def create_rule(rule: schemas.RuleCreate, ruleset_id: int, db: Session = Depends(get_db)):
+    # First, check if the ruleset exists
+    db_ruleset = db.query(models.RuleSet).filter(models.RuleSet.id == ruleset_id).first()
+    if db_ruleset is None:
+        raise HTTPException(status_code=404, detail="RuleSet not found")
+
+    # Create the rule
+    db_rule = models.Rule(name=rule.name, description=rule.description, is_active=rule.is_active, ruleset_id=ruleset_id)
     db.add(db_rule)
     db.commit()
     db.refresh(db_rule)
 
+    # Add conditions
     for condition in rule.conditions:
         db_condition = models.Condition(**condition.dict(), rule_id=db_rule.id)
         db.add(db_condition)
 
+    # Add actions
     for action in rule.actions:
         db_action = models.Action(**action.dict(), rule_id=db_rule.id)
         db.add(db_action)
