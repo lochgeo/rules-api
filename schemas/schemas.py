@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 import datetime
 
@@ -14,8 +14,7 @@ class Condition(ConditionBase):
     id: int
     rule_id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class ActionBase(BaseModel):
     type: str
@@ -28,8 +27,7 @@ class Action(ActionBase):
     id: int
     rule_id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class RuleBase(BaseModel):
     name: str
@@ -49,8 +47,7 @@ class Rule(RuleBase):
     conditions: List[Condition]
     actions: List[Action]
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class RuleSetBase(BaseModel):
     name: str
@@ -66,8 +63,7 @@ class RuleSet(RuleSetBase):
     updated_at: datetime.datetime
     rules: List[Rule]
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class EventBase(BaseModel):
     type: str
@@ -80,5 +76,4 @@ class Event(EventBase):
     id: int
     timestamp: datetime.datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

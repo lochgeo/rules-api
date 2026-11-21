@@ -22,12 +22,12 @@ def create_rule(rule: schemas.RuleCreate, ruleset_id: int, db: Session = Depends
 
     # Add conditions
     for condition in rule.conditions:
-        db_condition = models.Condition(**condition.dict(), rule_id=db_rule.id)
+        db_condition = models.Condition(**condition.model_dump(), rule_id=db_rule.id)
         db.add(db_condition)
 
     # Add actions
     for action in rule.actions:
-        db_action = models.Action(**action.dict(), rule_id=db_rule.id)
+        db_action = models.Action(**action.model_dump(), rule_id=db_rule.id)
         db.add(db_action)
 
     db.commit()
@@ -52,7 +52,7 @@ def update_rule(rule_id: int, rule: schemas.RuleCreate, db: Session = Depends(ge
     if db_rule is None:
         raise HTTPException(status_code=404, detail="Rule not found")
 
-    for key, value in rule.dict().items():
+    for key, value in rule.model_dump().items():
         setattr(db_rule, key, value)
 
     db.commit()

@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.post("/rulesets/", response_model=schemas.RuleSet)
 def create_ruleset(ruleset: schemas.RuleSetCreate, db: Session = Depends(get_db)):
-    db_ruleset = models.RuleSet(**ruleset.dict())
+    db_ruleset = models.RuleSet(**ruleset.model_dump())
     db.add(db_ruleset)
     db.commit()
     db.refresh(db_ruleset)
@@ -33,7 +33,7 @@ def update_ruleset(ruleset_id: int, ruleset: schemas.RuleSetCreate, db: Session 
     if db_ruleset is None:
         raise HTTPException(status_code=404, detail="RuleSet not found")
 
-    for key, value in ruleset.dict().items():
+    for key, value in ruleset.model_dump().items():
         setattr(db_ruleset, key, value)
 
     db.commit()
